@@ -1,13 +1,25 @@
-########################################################################
-####################### Makefile Template ##############################
-########################################################################
-
-# Compiler settings - Can be customized.
+# Compiler settings - Can be changed
 CC = g++
-CXXFLAGS = -std=gnu++2b -Wall -Wextra -Wpedantic -O2 -g
+
+CCFLAGS  = -m64 -std=gnu++2b
+CCFLAGS += -Wall
+CCFLAGS += -Wextra
+CCFLAGS += -Wpedantic
+CCFLAGS += -O2 -g
+CCFLAGS += $(INCFLAGS)
+
+INCFLAGS  = -iquotesrc
+INCFLAGS += -I ./include
+
 LDFLAGS = -lm -lstdc++
 
-# Makefile settings - Can be customized.
+UNAME = $(shell uname -s)
+
+ifeq ($(UNAME), windows)
+	LDFLAGS += -luser32
+endif
+
+# Makefile settings - Can be changed
 APPNAME = ./bin/hsc.exe
 EXT = .cpp
 SRCDIR = ./src
@@ -18,23 +30,20 @@ DEPDIR = ./bin/dep
 SRC = $(wildcard $(SRCDIR)/*$(EXT))
 OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
 DEP = $(OBJ:$(OBJDIR)/%.o=$(DEPDIR)/ssss%.d)
+
 # UNIX-based OS variables & settings
 RM = rm
 DELOBJ = $(OBJ)
+
 # Windows OS variables & settings
 DEL = del
 EXE = .exe
 WDELOBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)\\%.o)
-
-########################################################################
-####################### Targets beginning here #########################
-########################################################################
-
 all: $(APPNAME)
 
 # Builds the app
 $(APPNAME): $(OBJ)
-	$(CC) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CCFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Creates the dependecy rules
 %.d: $(SRCDIR)/%$(EXT)
@@ -45,9 +54,8 @@ $(APPNAME): $(OBJ)
 
 # Building rule for .o files and its .c/.cpp in combination with all .h
 $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
-	$(CC) $(CXXFLAGS) -o $@ -c $<
+	$(CC) $(CCFLAGS) -o $@ -c $<
 
-################### Cleaning rules for Unix-based OS ###################
 # Cleans complete project
 .PHONY: clean
 clean:
@@ -58,7 +66,6 @@ clean:
 cleandep:
 	$(RM) $(DEP)
 
-#################### Cleaning rules for Windows OS #####################
 # Cleans complete project
 .PHONY: cleanw
 cleanw:

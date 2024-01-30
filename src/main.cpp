@@ -1,10 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <strstream>
 #include <string>
 
 int main(const int ac, const char* argv[]) {
-    std::cout << "Hello, world!" << std::endl;
-    return 0;
+    _main(static_cast<u32>(ac), std::vector<std::string>(argv, argv + ac));
 }
